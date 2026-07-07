@@ -309,13 +309,14 @@
         if (window.location.protocol === "file:") {
           return "http://localhost:3000/api";
         }
-        if (window.location.hostname === "localhost" && window.location.port !== "3000") {
+        if (["localhost", "127.0.0.1"].includes(window.location.hostname) && window.location.port !== "3000") {
           return "http://localhost:3000/api";
         }
         return "/api";
       }
 
-      const API_BASE = resolveApiBase();
+      const LOCAL_API_BASE = "http://localhost:3000/api";
+      let apiBase = resolveApiBase();
       const TOKEN_KEY = "fwtestv2_token";
       let authToken = localStorage.getItem(TOKEN_KEY) || "";
       let authUser = null;
@@ -373,7 +374,17 @@
       const ftTableBody = document.getElementById("ft-table-body");
       const ftFilterFeedback = document.getElementById("ft-filter-feedback");
 
-      async function apiRequest(path, options = {}) {
+      function normalizeApiErrorMessage(path, rawMessage) {
+        if (!rawMessage) {
+          return `Request ${path} gagal.`;
+        }
+        if (rawMessage.includes("Unexpected token") || rawMessage.includes("is not valid JSON")) {
+          return `API ${path} tidak mengembalikan JSON valid. Pastikan backend aktif di http://localhost:3000.`;
+        }
+        return rawMessage;
+      }
+
+      async function requestWithBase(base, path, options = {}) {
         const headers = {
           "Content-Type": "application/json",
           ...(options.headers || {}),
@@ -382,31 +393,56 @@
           headers.Authorization = `Bearer ${authToken}`;
         }
 
-        const response = await fetch(`${API_BASE}${path}`, {
+        const response = await fetch(`${base}${path}`, {
           ...options,
           headers,
         });
 
-        const contentType = response.headers.get("content-type") || "";
-        let data;
-        if (contentType.includes("application/json")) {
-          data = await response.json();
-        } else {
-          const raw = await response.text();
-          throw new Error(
-            `API ${path} mengembalikan format non-JSON. Pastikan backend aktif di http://localhost:3000. Detail: ${raw.slice(0, 120)}`,
-          );
+        const raw = await response.text();
+        let data = null;
+        if (raw) {
+          try {
+            data = JSON.parse(raw);
+          } catch (_parseError) {
+            throw new Error(`API ${path} mengembalikan format non-JSON. Detail: ${raw.slice(0, 120)}`);
+          }
         }
 
         if (!response.ok) {
-          throw new Error(data.error || "Request failed");
+          throw new Error(data?.error || `Request failed (HTTP ${response.status})`);
         }
-        return data;
+        return data || {};
+      }
+
+      async function apiRequest(path, options = {}) {
+        try {
+          return await requestWithBase(apiBase, path, options);
+        } catch (error) {
+          const message = String(error?.message || "");
+          const canFallback = apiBase !== LOCAL_API_BASE;
+          const looksLikeWrongHost =
+            message.includes("non-JSON") ||
+            message.includes("Failed to fetch") ||
+            message.includes("HTTP 404");
+
+          if (canFallback && looksLikeWrongHost) {
+            try {
+              const data = await requestWithBase(LOCAL_API_BASE, path, options);
+              apiBase = LOCAL_API_BASE;
+              setBackendStatus(true);
+              return data;
+            } catch (fallbackError) {
+              throw new Error(normalizeApiErrorMessage(path, String(fallbackError?.message || fallbackError)));
+            }
+          }
+
+          throw new Error(normalizeApiErrorMessage(path, message));
+        }
       }
 
       function getHealthUrl() {
-        if (API_BASE.startsWith("http")) {
-          return new URL("/health", API_BASE).toString();
+        if (apiBase.startsWith("http")) {
+          return new URL("/health", apiBase).toString();
         }
         return "/health";
       }
