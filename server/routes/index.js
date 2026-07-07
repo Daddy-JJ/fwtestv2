@@ -8,8 +8,13 @@ import { stockRouter } from "./stocks.js";
 import { uploadRouter } from "./uploads.js";
 import { adminRouter } from "./admin.js";
 import { requireAdmin, requireAuth } from "../middleware/auth.js";
+import { getStoreMode } from "../store.js";
 
 export const apiRouter = Router();
+
+apiRouter.get("/health", (_req, res) => {
+	res.json({ ok: true, mode: getStoreMode() });
+});
 
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/stocks", stockRouter);

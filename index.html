@@ -62,7 +62,7 @@
             </div>
             <p id="auth-status" class="text-xs text-slate-500">Belum login</p>
             <p id="backend-status" class="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">Backend: checking...</p>
-            <div class="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-600">Phase 4 - Integration In Progress</div>
+            <div class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Phase 6 - QA Complete</div>
           </div>
         </header>
 
@@ -453,9 +453,10 @@
 
       function getHealthUrl(base) {
         if (base.startsWith("http")) {
-          return new URL("/health", base).toString();
+          const normalized = base.endsWith("/") ? base : `${base}/`;
+          return new URL("health", normalized).toString();
         }
-        return "/health";
+        return `${base}/health`;
       }
 
       async function checkHealthWithBase(base) {
