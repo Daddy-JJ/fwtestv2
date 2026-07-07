@@ -61,6 +61,7 @@
               <button id="logout-btn" type="button" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700">Logout</button>
             </div>
             <p id="auth-status" class="text-xs text-slate-500">Belum login</p>
+            <p id="backend-status" class="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">Backend: checking...</p>
             <div class="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-600">Phase 4 - Integration In Progress</div>
           </div>
         </header>
@@ -303,7 +304,18 @@
         { emiten: "ASII", entry: 5600, tp: 5900, sl: 5350, status: "sl_hit", strategy: "Value Rebound" },
       ];
       let ftData = [...defaultFtData];
-      const API_BASE = "/api";
+      function resolveApiBase() {
+        // If app is opened from file:// or a dev server port, fallback to local API server.
+        if (window.location.protocol === "file:") {
+          return "http://localhost:3000/api";
+        }
+        if (window.location.hostname === "localhost" && window.location.port !== "3000") {
+          return "http://localhost:3000/api";
+        }
+        return "/api";
+      }
+
+      const API_BASE = resolveApiBase();
       const TOKEN_KEY = "fwtestv2_token";
       let authToken = localStorage.getItem(TOKEN_KEY) || "";
       let authUser = null;
@@ -334,6 +346,7 @@
       const loginAdminBtn = document.getElementById("login-admin-btn");
       const logoutBtn = document.getElementById("logout-btn");
       const authStatus = document.getElementById("auth-status");
+      const backendStatus = document.getElementById("backend-status");
       const profileNameInput = document.getElementById("profile-name");
       const profileEmailInput = document.getElementById("profile-email");
       const membershipTier = document.getElementById("membership-tier");
@@ -373,11 +386,57 @@
           ...options,
           headers,
         });
-        const data = await response.json();
+
+        const contentType = response.headers.get("content-type") || "";
+        let data;
+        if (contentType.includes("application/json")) {
+          data = await response.json();
+        } else {
+          const raw = await response.text();
+          throw new Error(
+            `API ${path} mengembalikan format non-JSON. Pastikan backend aktif di http://localhost:3000. Detail: ${raw.slice(0, 120)}`,
+          );
+        }
+
         if (!response.ok) {
           throw new Error(data.error || "Request failed");
         }
         return data;
+      }
+
+      function getHealthUrl() {
+        if (API_BASE.startsWith("http")) {
+          return new URL("/health", API_BASE).toString();
+        }
+        return "/health";
+      }
+
+      function setBackendStatus(connected, detail = "") {
+        if (connected) {
+          backendStatus.className = "rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700";
+          backendStatus.textContent = "Backend: connected";
+          return;
+        }
+
+        backendStatus.className = "rounded-full bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700";
+        backendStatus.textContent = detail ? `Backend: disconnected (${detail})` : "Backend: disconnected";
+      }
+
+      async function refreshBackendStatus() {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
+        try {
+          const response = await fetch(getHealthUrl(), { signal: controller.signal });
+          if (!response.ok) {
+            setBackendStatus(false, `HTTP ${response.status}`);
+            return;
+          }
+          setBackendStatus(true);
+        } catch (_error) {
+          setBackendStatus(false, "unreachable");
+        } finally {
+          clearTimeout(timeoutId);
+        }
       }
 
       function renderStrategies(rows) {
@@ -542,11 +601,13 @@
           authToken = data.token;
           authUser = data.user;
           localStorage.setItem(TOKEN_KEY, authToken);
+          setBackendStatus(true);
           setAuthStatus(`Login: ${authUser.email} (${authUser.role})`, "text-emerald-600");
           await loadPrivateData();
         } catch (error) {
           clearSession();
           setAuthStatus(`Login gagal: ${error.message}`, "text-rose-600");
+          await refreshBackendStatus();
         }
       }
 
@@ -899,6 +960,7 @@
       ftFilterFeedback.textContent = `${ftData.length} data tampil.`;
       renderStrategies([]);
       renderAdminUsers([]);
+      refreshBackendStatus();
       restoreSession();
     </script>
   </body>
