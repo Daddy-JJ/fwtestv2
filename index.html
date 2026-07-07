@@ -315,7 +315,15 @@
         return "/api";
       }
 
+      function isLocalRuntime() {
+        return (
+          window.location.protocol === "file:" ||
+          ["localhost", "127.0.0.1"].includes(window.location.hostname)
+        );
+      }
+
       const LOCAL_API_BASE = "http://localhost:3000/api";
+      const ALLOW_LOCAL_FALLBACK = isLocalRuntime();
       let apiBase = resolveApiBase();
       const TOKEN_KEY = "fwtestv2_token";
       let authToken = localStorage.getItem(TOKEN_KEY) || "";
@@ -381,6 +389,9 @@
         if (rawMessage.includes("Unexpected token") || rawMessage.includes("is not valid JSON")) {
           return `API ${path} tidak mengembalikan JSON valid. Pastikan backend aktif di http://localhost:3000.`;
         }
+        if (rawMessage.includes("Failed to fetch")) {
+          return `Tidak bisa terhubung ke API ${path}. Pastikan backend aktif di http://localhost:3000 dan halaman frontend dibuka dari origin HTTP lokal.`;
+        }
         return rawMessage;
       }
 
@@ -419,7 +430,7 @@
           return await requestWithBase(apiBase, path, options);
         } catch (error) {
           const message = String(error?.message || "");
-          const canFallback = apiBase !== LOCAL_API_BASE;
+          const canFallback = ALLOW_LOCAL_FALLBACK && apiBase !== LOCAL_API_BASE;
           const looksLikeWrongHost =
             message.includes("non-JSON") ||
             message.includes("Failed to fetch") ||
@@ -440,11 +451,24 @@
         }
       }
 
-      function getHealthUrl() {
-        if (apiBase.startsWith("http")) {
-          return new URL("/health", apiBase).toString();
+      function getHealthUrl(base) {
+        if (base.startsWith("http")) {
+          return new URL("/health", base).toString();
         }
         return "/health";
+      }
+
+      async function checkHealthWithBase(base) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
+        try {
+          const response = await fetch(getHealthUrl(base), { signal: controller.signal });
+          return { ok: response.ok, status: response.status };
+        } catch (_error) {
+          return { ok: false, status: 0 };
+        } finally {
+          clearTimeout(timeoutId);
+        }
       }
 
       function setBackendStatus(connected, detail = "") {
@@ -459,20 +483,26 @@
       }
 
       async function refreshBackendStatus() {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2500);
-        try {
-          const response = await fetch(getHealthUrl(), { signal: controller.signal });
-          if (!response.ok) {
-            setBackendStatus(false, `HTTP ${response.status}`);
+        const primary = await checkHealthWithBase(apiBase);
+        if (primary.ok) {
+          setBackendStatus(true);
+          return;
+        }
+
+        if (ALLOW_LOCAL_FALLBACK && apiBase !== LOCAL_API_BASE) {
+          const fallback = await checkHealthWithBase(LOCAL_API_BASE);
+          if (fallback.ok) {
+            apiBase = LOCAL_API_BASE;
+            setBackendStatus(true);
             return;
           }
-          setBackendStatus(true);
-        } catch (_error) {
-          setBackendStatus(false, "unreachable");
-        } finally {
-          clearTimeout(timeoutId);
+          const detail = fallback.status ? `HTTP ${fallback.status}` : "unreachable";
+          setBackendStatus(false, detail);
+          return;
         }
+
+        const detail = primary.status ? `HTTP ${primary.status}` : "unreachable";
+        setBackendStatus(false, detail);
       }
 
       function renderStrategies(rows) {

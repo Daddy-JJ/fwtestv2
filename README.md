@@ -24,6 +24,12 @@ SOT-driven project for membership website forward test saham Indonesia.
 ## Next Step
 Project siap lanjut ke deployment target dan operasionalisasi environment production.
 
+## Vercel Rewrite Setup
+- File: `vercel.json`
+- Rewrite `/api/*` sudah diarahkan ke backend eksternal via:
+	- `https://your-backend-domain.com/api/:path*`
+- Ganti domain backend tersebut dengan URL backend production kamu sebelum deploy.
+
 ## Dummy Login Accounts (Mock API)
 - Admin
 	- email: admin@example.com
