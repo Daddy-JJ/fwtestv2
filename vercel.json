@@ -1,8 +1,7 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://fwtestv2.vercel.app/:path*"
+  "functions": {
+    "api/[...all].js": {
+      "maxDuration": 10
     }
-  ]
+  }
 }

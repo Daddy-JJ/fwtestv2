@@ -26,6 +26,10 @@ app.use((_req, res) => {
   res.status(404).json({ ok: false, error: "Not found" });
 });
 
-app.listen(port, () => {
-  console.log(`[fwtestv2] API running on http://localhost:${port}`);
-});
+if (process.env.VERCEL !== "1") {
+  app.listen(port, () => {
+    console.log(`[fwtestv2] API running on http://localhost:${port}`);
+  });
+}
+
+export default app;
