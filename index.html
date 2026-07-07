@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FWTestV2 Membership Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+            },
+            colors: {
+              brand: {
+                50: "#eff6ff",
+                100: "#dbeafe",
+                500: "#2563eb",
+                600: "#1d4ed8",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .active-nav {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div class="min-h-screen lg:grid lg:grid-cols-[260px_1fr]">
+      <aside class="border-r border-slate-200 bg-white">
+        <div class="border-b border-slate-200 p-5">
+          <h1 class="text-lg font-semibold">FWTestV2</h1>
+          <p class="text-xs text-slate-500">Membership Forward Test</p>
+        </div>
+
+        <nav class="space-y-1 p-4 text-sm" id="sidebar-nav">
+          <button data-view-target="dashboard" class="active-nav w-full rounded-lg px-3 py-2 text-left font-medium">Dashboard</button>
+          <button data-view-target="forward-test" class="w-full rounded-lg px-3 py-2 text-left font-medium text-slate-700 hover:bg-slate-100">Forward Test</button>
+          <button data-view-target="analisis" class="w-full rounded-lg px-3 py-2 text-left font-medium text-slate-700 hover:bg-slate-100">Analisis</button>
+          <button data-view-target="pengaturan" class="w-full rounded-lg px-3 py-2 text-left font-medium text-slate-700 hover:bg-slate-100">Pengaturan</button>
+          <button data-view-target="admin" class="w-full rounded-lg px-3 py-2 text-left font-medium text-slate-700 hover:bg-slate-100">Admin Panel</button>
+        </nav>
+      </aside>
+
+      <main class="p-4 sm:p-6 lg:p-8">
+        <header class="mb-6 flex flex-col gap-3 rounded-xl bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 class="text-xl font-semibold" id="page-title">Dashboard</h2>
+            <p class="text-sm text-slate-500">Integration mode ke backend bearer API</p>
+          </div>
+          <div class="flex flex-col items-start gap-2 sm:items-end">
+            <div class="flex flex-wrap gap-2">
+              <button id="login-user-btn" type="button" class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white">Login User</button>
+              <button id="login-admin-btn" type="button" class="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white">Login Admin</button>
+              <button id="logout-btn" type="button" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700">Logout</button>
+            </div>
+            <p id="auth-status" class="text-xs text-slate-500">Belum login</p>
+            <div class="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-600">Phase 4 - Integration In Progress</div>
+          </div>
+        </header>
+
+        <section data-view="dashboard" class="space-y-6">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="text-xs uppercase tracking-wide text-slate-500">Strategy Type</p>
+              <p id="metric-strategy-count" class="mt-2 text-2xl font-semibold">0</p>
+              <p class="text-xs text-slate-500">Momentum, Value, Swing, Breakout</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="text-xs uppercase tracking-wide text-slate-500">Total Uji Coba</p>
+              <p id="metric-total-tests" class="mt-2 text-2xl font-semibold">0</p>
+              <p class="text-xs text-emerald-600">+12 bulan ini</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="text-xs uppercase tracking-wide text-slate-500">Win Rate</p>
+              <p id="metric-win-rate" class="mt-2 text-2xl font-semibold">0%</p>
+              <p class="text-xs text-emerald-600">+4.2% vs bulan lalu</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <p class="text-xs uppercase tracking-wide text-slate-500">Rata-rata Durasi TP/SL</p>
+              <p id="metric-duration" class="mt-2 text-2xl font-semibold">TP 0d / SL 0d</p>
+              <p class="text-xs text-slate-500">Durasi target tercapai</p>
+            </article>
+          </div>
+
+          <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="font-semibold">Chart Win Rate (Area)</h3>
+              <div class="mt-4 h-48 rounded-lg bg-gradient-to-t from-brand-100 to-white p-4">
+                <div class="flex h-full items-end gap-2">
+                  <div class="w-1/6 rounded-t bg-brand-500/35" style="height: 30%"></div>
+                  <div class="w-1/6 rounded-t bg-brand-500/45" style="height: 40%"></div>
+                  <div class="w-1/6 rounded-t bg-brand-500/55" style="height: 48%"></div>
+                  <div class="w-1/6 rounded-t bg-brand-500/60" style="height: 52%"></div>
+                  <div class="w-1/6 rounded-t bg-brand-500/70" style="height: 63%"></div>
+                  <div class="w-1/6 rounded-t bg-brand-500/80" style="height: 68%"></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="font-semibold">Chart Durasi TP vs SL (Bar)</h3>
+              <div class="mt-4 space-y-3 text-sm">
+                <div>
+                  <div class="mb-1 flex justify-between"><span>TP</span><span>11 hari</span></div>
+                  <div class="h-3 rounded-full bg-slate-100"><div class="h-3 w-10/12 rounded-full bg-emerald-500"></div></div>
+                </div>
+                <div>
+                  <div class="mb-1 flex justify-between"><span>SL</span><span>7 hari</span></div>
+                  <div class="h-3 rounded-full bg-slate-100"><div class="h-3 w-7/12 rounded-full bg-rose-500"></div></div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="mb-4 font-semibold">5 Forward Test Terbaru</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead>
+                  <tr class="border-b text-left text-slate-500">
+                    <th class="py-2 pr-4">Emiten</th>
+                    <th class="py-2 pr-4">Entry</th>
+                    <th class="py-2 pr-4">TP/SL</th>
+                    <th class="py-2 pr-4">Status</th>
+                    <th class="py-2 pr-4">Durasi</th>
+                  </tr>
+                </thead>
+                <tbody id="dashboard-latest-body"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section data-view="forward-test" class="hidden space-y-6">
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="font-semibold">Input Manual Forward Test</h3>
+            <form id="forward-test-form" class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4" novalidate>
+              <label class="text-sm">Emiten<input id="ft-emiten" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="BBCA" /><span id="ft-emiten-error" class="mt-1 block text-xs text-rose-600"></span></label>
+              <label class="text-sm">Entry Price<input id="ft-entry" type="number" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="9200" /><span id="ft-entry-error" class="mt-1 block text-xs text-rose-600"></span></label>
+              <label class="text-sm">Take Profit<input id="ft-tp" type="number" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="9800" /><span id="ft-tp-error" class="mt-1 block text-xs text-rose-600"></span></label>
+              <label class="text-sm">Stop Loss<input id="ft-sl" type="number" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="8900" /><span id="ft-sl-error" class="mt-1 block text-xs text-rose-600"></span></label>
+              <label class="text-sm md:col-span-2">Strategi<input id="ft-strategy" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="Breakout Pullback" /><span id="ft-strategy-error" class="mt-1 block text-xs text-rose-600"></span></label>
+              <label class="text-sm">Tanggal Entry<input id="ft-date" type="date" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" /><span id="ft-date-error" class="mt-1 block text-xs text-rose-600"></span></label>
+              <label class="text-sm">Status<select id="ft-status" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"><option>active</option><option>tp_hit</option><option>sl_hit</option><option>manual_close</option></select></label>
+              <label class="text-sm md:col-span-2 xl:col-span-4">Catatan<textarea id="ft-note" rows="3" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="Setup valid saat breakout volume tinggi"></textarea></label>
+              <div class="md:col-span-2 xl:col-span-4 flex gap-2">
+                <button id="ft-save-btn" type="button" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-70">Simpan Test</button>
+                <button id="ft-reset-btn" type="button" class="rounded-lg border border-slate-300 px-4 py-2 text-sm">Reset</button>
+              </div>
+              <p id="ft-feedback" class="md:col-span-2 xl:col-span-4 text-sm text-slate-500" aria-live="polite"></p>
+            </form>
+          </article>
+
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="font-semibold">Upload Screenshot (Simulasi OCR)</h3>
+            <div id="ocr-dropzone" class="mt-4 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+              <p class="text-sm text-slate-600">Drag & drop screenshot atau klik untuk upload.</p>
+              <p class="mt-2 text-xs text-slate-500">Output OCR simulasi: emiten, entry, TP, SL akan auto-fill.</p>
+              <button id="ocr-mock-btn" type="button" class="mt-4 rounded-lg bg-slate-900 px-4 py-2 text-sm text-white">Jalankan Mock OCR</button>
+              <p id="ocr-feedback" class="mt-2 text-xs text-slate-500" aria-live="polite"></p>
+            </div>
+          </article>
+
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="font-semibold">Filter & Search</h3>
+            <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+              <input id="ft-search-input" class="rounded-lg border border-slate-300 px-3 py-2" placeholder="Search emiten..." />
+              <select id="ft-filter-status" class="rounded-lg border border-slate-300 px-3 py-2"><option value="all">Semua Status</option><option value="active">active</option><option value="tp_hit">tp_hit</option><option value="sl_hit">sl_hit</option><option value="manual_close">manual_close</option></select>
+              <button id="ft-apply-filter" type="button" class="rounded-lg bg-slate-900 px-4 py-2 text-white">Apply Filter</button>
+            </div>
+            <div class="mt-4 overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead>
+                  <tr class="border-b text-left text-slate-500">
+                    <th class="py-2 pr-4">Emiten</th>
+                    <th class="py-2 pr-4">Entry</th>
+                    <th class="py-2 pr-4">TP/SL</th>
+                    <th class="py-2 pr-4">Status</th>
+                    <th class="py-2 pr-4">Strategi</th>
+                  </tr>
+                </thead>
+                <tbody id="ft-table-body"></tbody>
+              </table>
+              <p id="ft-filter-feedback" class="mt-2 text-xs text-slate-500" aria-live="polite"></p>
+            </div>
+          </article>
+        </section>
+
+        <section data-view="analisis" class="hidden space-y-6">
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs uppercase tracking-wide text-slate-500">Win Rate</p><p id="analysis-win-rate" class="mt-2 text-2xl font-semibold">0%</p></article>
+            <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs uppercase tracking-wide text-slate-500">Avg Profit</p><p id="analysis-avg-profit" class="mt-2 text-2xl font-semibold">-</p></article>
+            <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs uppercase tracking-wide text-slate-500">Avg Durasi TP</p><p id="analysis-tp-days" class="mt-2 text-2xl font-semibold">0 hari</p></article>
+            <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"><p class="text-xs uppercase tracking-wide text-slate-500">Avg Durasi SL</p><p id="analysis-sl-days" class="mt-2 text-2xl font-semibold">0 hari</p></article>
+          </div>
+
+          <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="font-semibold">Distribusi Hasil</h3>
+              <div class="mt-4 flex items-center gap-6">
+                <div id="analysis-distribution-chart" class="h-36 w-36 rounded-full bg-[conic-gradient(#10b981_0_50%,#ef4444_50%_80%,#64748b_80%_100%)]"></div>
+                <ul id="analysis-distribution-list" class="text-sm space-y-2">
+                  <li><span class="inline-block h-2 w-2 rounded-full bg-emerald-500 mr-2"></span>TP Hit 0%</li>
+                  <li><span class="inline-block h-2 w-2 rounded-full bg-rose-500 mr-2"></span>SL Hit 0%</li>
+                  <li><span class="inline-block h-2 w-2 rounded-full bg-slate-500 mr-2"></span>Manual 0%</li>
+                </ul>
+              </div>
+            </article>
+            <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <h3 class="font-semibold">Performa per Strategi</h3>
+              <div class="mt-4 space-y-3 text-sm">
+                <div><div class="mb-1 flex justify-between"><span>Breakout Pullback</span><span>74%</span></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 w-3/4 rounded-full bg-brand-600"></div></div></div>
+                <div><div class="mb-1 flex justify-between"><span>Momentum Weekly</span><span>65%</span></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 w-2/3 rounded-full bg-brand-600"></div></div></div>
+                <div><div class="mb-1 flex justify-between"><span>Value Rebound</span><span>53%</span></div><div class="h-2 rounded-full bg-slate-100"><div class="h-2 w-1/2 rounded-full bg-brand-600"></div></div></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section data-view="pengaturan" class="hidden space-y-6">
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="font-semibold">Profil Pengguna</h3>
+            <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <label class="text-sm">Nama<input id="profile-name" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value="Arwan" /></label>
+              <label class="text-sm">Email<input id="profile-email" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2" value="user@example.com" /></label>
+            </div>
+          </article>
+
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="font-semibold">Membership</h3>
+            <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div class="rounded-lg border border-slate-200 p-4">
+                <p id="membership-tier" class="font-medium">Free</p>
+                <p class="mt-1 text-sm text-slate-600">Batas 10 forward test</p>
+              </div>
+              <div class="rounded-lg border border-brand-200 bg-brand-50 p-4">
+                <p class="font-medium text-brand-700">Premium</p>
+                <p class="mt-1 text-sm text-brand-600">Unlimited forward test</p>
+                <button class="mt-3 rounded-lg bg-brand-600 px-3 py-2 text-sm text-white">Upgrade</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="font-semibold">Manajemen Strategi</h3>
+            <div class="mt-4 overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead><tr class="border-b text-left text-slate-500"><th class="py-2 pr-4">Nama Strategi</th><th class="py-2 pr-4">Deskripsi</th><th class="py-2 pr-4">Aksi</th></tr></thead>
+                <tbody id="strategy-table-body"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section data-view="admin" class="hidden space-y-6">
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="font-semibold">Admin Control Panel</h3>
+            <p class="mt-1 text-sm text-slate-600">Monitoring user, membership, dan statistik platform.</p>
+            <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 text-sm">
+              <div class="rounded-lg border border-slate-200 p-3"><p class="text-slate-500">Total User</p><p class="text-xl font-semibold">1,284</p></div>
+              <div class="rounded-lg border border-slate-200 p-3"><p class="text-slate-500">Premium User</p><p class="text-xl font-semibold">314</p></div>
+              <div class="rounded-lg border border-slate-200 p-3"><p class="text-slate-500">Total Tests</p><p class="text-xl font-semibold">8,240</p></div>
+              <div class="rounded-lg border border-slate-200 p-3"><p class="text-slate-500">Avg Win Rate</p><p class="text-xl font-semibold">62.7%</p></div>
+            </div>
+          </article>
+
+          <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h3 class="mb-4 font-semibold">Manajemen User</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead><tr class="border-b text-left text-slate-500"><th class="py-2 pr-4">Nama</th><th class="py-2 pr-4">Email</th><th class="py-2 pr-4">Role</th><th class="py-2 pr-4">Membership</th><th class="py-2 pr-4">Aksi</th></tr></thead>
+                <tbody id="admin-user-table-body"></tbody>
+              </table>
+            </div>
+            <p id="admin-feedback" class="mt-3 text-xs text-slate-500" aria-live="polite"></p>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const titleMap = {
+        dashboard: "Dashboard",
+        "forward-test": "Forward Test",
+        analisis: "Analisis",
+        pengaturan: "Pengaturan",
+        admin: "Admin Panel",
+      };
+
+      const navButtons = document.querySelectorAll("[data-view-target]");
+      const sections = document.querySelectorAll("[data-view]");
+      const pageTitle = document.getElementById("page-title");
+      const defaultFtData = [
+        { emiten: "BBCA", entry: 9200, tp: 9800, sl: 8900, status: "tp_hit", strategy: "Breakout Pullback" },
+        { emiten: "TLKM", entry: 3850, tp: 4050, sl: 3720, status: "active", strategy: "Momentum Weekly" },
+        { emiten: "ASII", entry: 5600, tp: 5900, sl: 5350, status: "sl_hit", strategy: "Value Rebound" },
+      ];
+      let ftData = [...defaultFtData];
+      const API_BASE = "/api";
+      const TOKEN_KEY = "fwtestv2_token";
+      let authToken = localStorage.getItem(TOKEN_KEY) || "";
+      let authUser = null;
+
+      const ftForm = document.getElementById("forward-test-form");
+      const ftEmitenInput = document.getElementById("ft-emiten");
+      const ftEntryInput = document.getElementById("ft-entry");
+      const ftTpInput = document.getElementById("ft-tp");
+      const ftSlInput = document.getElementById("ft-sl");
+      const ftStrategyInput = document.getElementById("ft-strategy");
+      const ftDateInput = document.getElementById("ft-date");
+      const ftStatusInput = document.getElementById("ft-status");
+      const ftNoteInput = document.getElementById("ft-note");
+      const ftEmitenError = document.getElementById("ft-emiten-error");
+      const ftEntryError = document.getElementById("ft-entry-error");
+      const ftTpError = document.getElementById("ft-tp-error");
+      const ftSlError = document.getElementById("ft-sl-error");
+      const ftStrategyError = document.getElementById("ft-strategy-error");
+      const ftDateError = document.getElementById("ft-date-error");
+      const ftSaveBtn = document.getElementById("ft-save-btn");
+      const ftResetBtn = document.getElementById("ft-reset-btn");
+      const ftFeedback = document.getElementById("ft-feedback");
+
+      const ocrMockBtn = document.getElementById("ocr-mock-btn");
+      const ocrFeedback = document.getElementById("ocr-feedback");
+
+      const loginUserBtn = document.getElementById("login-user-btn");
+      const loginAdminBtn = document.getElementById("login-admin-btn");
+      const logoutBtn = document.getElementById("logout-btn");
+      const authStatus = document.getElementById("auth-status");
+      const profileNameInput = document.getElementById("profile-name");
+      const profileEmailInput = document.getElementById("profile-email");
+      const membershipTier = document.getElementById("membership-tier");
+      const strategyTableBody = document.getElementById("strategy-table-body");
+      const adminUserTableBody = document.getElementById("admin-user-table-body");
+      const adminFeedback = document.getElementById("admin-feedback");
+      const dashboardLatestBody = document.getElementById("dashboard-latest-body");
+      const metricStrategyCount = document.getElementById("metric-strategy-count");
+      const metricTotalTests = document.getElementById("metric-total-tests");
+      const metricWinRate = document.getElementById("metric-win-rate");
+      const metricDuration = document.getElementById("metric-duration");
+      const analysisWinRate = document.getElementById("analysis-win-rate");
+      const analysisAvgProfit = document.getElementById("analysis-avg-profit");
+      const analysisTpDays = document.getElementById("analysis-tp-days");
+      const analysisSlDays = document.getElementById("analysis-sl-days");
+      const analysisDistributionChart = document.getElementById("analysis-distribution-chart");
+      const analysisDistributionList = document.getElementById("analysis-distribution-list");
+
+      let adminMembershipMap = new Map();
+
+      const ftSearchInput = document.getElementById("ft-search-input");
+      const ftFilterStatus = document.getElementById("ft-filter-status");
+      const ftApplyFilterBtn = document.getElementById("ft-apply-filter");
+      const ftTableBody = document.getElementById("ft-table-body");
+      const ftFilterFeedback = document.getElementById("ft-filter-feedback");
+
+      async function apiRequest(path, options = {}) {
+        const headers = {
+          "Content-Type": "application/json",
+          ...(options.headers || {}),
+        };
+        if (authToken) {
+          headers.Authorization = `Bearer ${authToken}`;
+        }
+
+        const response = await fetch(`${API_BASE}${path}`, {
+          ...options,
+          headers,
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Request failed");
+        }
+        return data;
+      }
+
+      function renderStrategies(rows) {
+        strategyTableBody.innerHTML = "";
+        if (!rows.length) {
+          strategyTableBody.innerHTML = '<tr><td colspan="3" class="py-3 text-center text-slate-500">Belum ada strategi.</td></tr>';
+          return;
+        }
+        rows.forEach((row) => {
+          const tr = document.createElement("tr");
+          tr.className = "border-b";
+          tr.innerHTML = `
+            <td class="py-2 pr-4">${row.name}</td>
+            <td class="py-2 pr-4">${row.description || "-"}</td>
+            <td class="py-2 pr-4">View</td>
+          `;
+          strategyTableBody.appendChild(tr);
+        });
+      }
+
+      function renderAdminUsers(rows) {
+        adminUserTableBody.innerHTML = "";
+        if (!rows.length) {
+          adminUserTableBody.innerHTML = '<tr><td colspan="5" class="py-3 text-center text-slate-500">Tidak ada data user.</td></tr>';
+          return;
+        }
+        rows.forEach((row) => {
+          const membership = adminMembershipMap.get(row.id);
+          const membershipId = membership?.id || "";
+          const membershipTierValue = membership?.tier || "free";
+          const tr = document.createElement("tr");
+          tr.className = "border-b";
+          tr.innerHTML = `
+            <td class="py-2 pr-4">${row.name || "-"}</td>
+            <td class="py-2 pr-4">${row.email || "-"}</td>
+            <td class="py-2 pr-4">
+              <select data-role-user-id="${row.id}" class="rounded border border-slate-300 px-2 py-1 text-xs">
+                <option value="user" ${row.role === "user" ? "selected" : ""}>user</option>
+                <option value="admin" ${row.role === "admin" ? "selected" : ""}>admin</option>
+              </select>
+            </td>
+            <td class="py-2 pr-4">
+              <select data-membership-id="${membershipId}" data-user-id="${row.id}" class="rounded border border-slate-300 px-2 py-1 text-xs" ${membershipId ? "" : "disabled"}>
+                <option value="free" ${membershipTierValue === "free" ? "selected" : ""}>free</option>
+                <option value="premium" ${membershipTierValue === "premium" ? "selected" : ""}>premium</option>
+              </select>
+            </td>
+            <td class="py-2 pr-4">
+              <div class="flex gap-2">
+                <button data-save-role-id="${row.id}" class="rounded bg-slate-900 px-2 py-1 text-xs text-white">Save Role</button>
+                <button data-save-membership-id="${membershipId}" class="rounded bg-brand-600 px-2 py-1 text-xs text-white" ${membershipId ? "" : "disabled"}>Save Tier</button>
+              </div>
+            </td>
+          `;
+          adminUserTableBody.appendChild(tr);
+        });
+
+        adminUserTableBody.querySelectorAll("[data-save-role-id]").forEach((button) => {
+          button.addEventListener("click", async () => {
+            const userId = button.dataset.saveRoleId;
+            const select = adminUserTableBody.querySelector(`[data-role-user-id="${userId}"]`);
+            if (!select) return;
+            try {
+              await apiRequest(`/admin/users/${userId}/role`, {
+                method: "PUT",
+                body: JSON.stringify({ role: select.value }),
+              });
+              adminFeedback.textContent = `Role user ${userId} berhasil diupdate.`;
+              adminFeedback.className = "mt-3 text-xs text-emerald-600";
+              await loadPrivateData();
+            } catch (error) {
+              adminFeedback.textContent = `Update role gagal: ${error.message}`;
+              adminFeedback.className = "mt-3 text-xs text-rose-600";
+            }
+          });
+        });
+
+        adminUserTableBody.querySelectorAll("[data-save-membership-id]").forEach((button) => {
+          button.addEventListener("click", async () => {
+            const membershipId = button.dataset.saveMembershipId;
+            if (!membershipId) return;
+            const select = adminUserTableBody.querySelector(`[data-membership-id="${membershipId}"]`);
+            if (!select) return;
+            const tier = select.value;
+            try {
+              await apiRequest(`/admin/memberships/${membershipId}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                  tier,
+                  max_forward_tests: tier === "premium" ? -1 : 10,
+                }),
+              });
+              adminFeedback.textContent = `Tier membership ${membershipId} berhasil diupdate.`;
+              adminFeedback.className = "mt-3 text-xs text-emerald-600";
+              await loadPrivateData();
+            } catch (error) {
+              adminFeedback.textContent = `Update membership gagal: ${error.message}`;
+              adminFeedback.className = "mt-3 text-xs text-rose-600";
+            }
+          });
+        });
+      }
+
+      function renderDashboardLatestTests(rows) {
+        dashboardLatestBody.innerHTML = "";
+        if (!rows.length) {
+          dashboardLatestBody.innerHTML = '<tr><td colspan="5" class="py-3 text-center text-slate-500">Belum ada data forward test.</td></tr>';
+          return;
+        }
+
+        rows.slice(0, 5).forEach((row) => {
+          const tr = document.createElement("tr");
+          tr.className = "border-b";
+          tr.innerHTML = `
+            <td class="py-2 pr-4">${row.emiten}</td>
+            <td class="py-2 pr-4">${Number(row.entry).toLocaleString("id-ID")}</td>
+            <td class="py-2 pr-4">${Number(row.tp).toLocaleString("id-ID")} / ${Number(row.sl).toLocaleString("id-ID")}</td>
+            <td class="py-2 pr-4">${row.status}</td>
+            <td class="py-2 pr-4">-</td>
+          `;
+          dashboardLatestBody.appendChild(tr);
+        });
+      }
+
+      function renderDistribution(distribution) {
+        const tp = Number(distribution.tp_hit || 0);
+        const sl = Number(distribution.sl_hit || 0);
+        const active = Number(distribution.active || 0);
+        const manual = Number(distribution.manual_close || 0);
+
+        const tpEnd = tp;
+        const slEnd = tp + sl;
+        const activeEnd = tp + sl + active;
+        analysisDistributionChart.style.background = `conic-gradient(#10b981 0 ${tpEnd}%, #ef4444 ${tpEnd}% ${slEnd}%, #2563eb ${slEnd}% ${activeEnd}%, #64748b ${activeEnd}% 100%)`;
+        analysisDistributionList.innerHTML = `
+          <li><span class="inline-block h-2 w-2 rounded-full bg-emerald-500 mr-2"></span>TP Hit ${tp.toFixed(2)}%</li>
+          <li><span class="inline-block h-2 w-2 rounded-full bg-rose-500 mr-2"></span>SL Hit ${sl.toFixed(2)}%</li>
+          <li><span class="inline-block h-2 w-2 rounded-full bg-blue-600 mr-2"></span>Active ${active.toFixed(2)}%</li>
+          <li><span class="inline-block h-2 w-2 rounded-full bg-slate-500 mr-2"></span>Manual ${manual.toFixed(2)}%</li>
+        `;
+      }
+
+      function setAuthStatus(text, tone = "text-slate-500") {
+        authStatus.className = `text-xs ${tone}`;
+        authStatus.textContent = text;
+      }
+
+      function clearSession() {
+        authToken = "";
+        authUser = null;
+        localStorage.removeItem(TOKEN_KEY);
+        setAuthStatus("Belum login");
+      }
+
+      async function loginWithCredentials(email, password) {
+        try {
+          const data = await apiRequest("/auth/login", {
+            method: "POST",
+            body: JSON.stringify({ email, password }),
+            headers: {},
+          });
+          authToken = data.token;
+          authUser = data.user;
+          localStorage.setItem(TOKEN_KEY, authToken);
+          setAuthStatus(`Login: ${authUser.email} (${authUser.role})`, "text-emerald-600");
+          await loadPrivateData();
+        } catch (error) {
+          clearSession();
+          setAuthStatus(`Login gagal: ${error.message}`, "text-rose-600");
+        }
+      }
+
+      async function restoreSession() {
+        if (!authToken) {
+          return;
+        }
+        try {
+          const me = await apiRequest("/auth/me");
+          authUser = me.user;
+          if (!authUser) {
+            clearSession();
+            return;
+          }
+          setAuthStatus(`Login: ${authUser.email} (${authUser.role})`, "text-emerald-600");
+          await loadPrivateData();
+        } catch (_error) {
+          clearSession();
+        }
+      }
+
+      async function loadPrivateData() {
+        if (!authToken) {
+          return;
+        }
+
+        try {
+          const [membershipRes, strategyRes, forwardRes, analyticsRes] = await Promise.all([
+            apiRequest("/membership/current"),
+            apiRequest("/strategies"),
+            apiRequest("/forward-tests"),
+            apiRequest("/analytics/stats"),
+          ]);
+          const [durationRes, distributionRes] = await Promise.all([
+            apiRequest("/analytics/duration"),
+            apiRequest("/analytics/distribution"),
+          ]);
+
+          membershipTier.textContent = membershipRes.membership?.tier === "premium" ? "Premium" : "Free";
+          profileNameInput.value = authUser?.name || "";
+          profileEmailInput.value = authUser?.email || "";
+
+          renderStrategies(strategyRes.data || []);
+
+          ftData = (forwardRes.data || []).map((item) => ({
+            id: item.id,
+            emiten: item.emiten,
+            entry: Number(item.entry_price),
+            tp: Number(item.take_profit),
+            sl: Number(item.stop_loss),
+            status: item.status,
+            strategy: item.strategy_name || "-",
+          }));
+          applyFtFilter();
+          renderDashboardLatestTests(ftData);
+
+          metricStrategyCount.textContent = String((strategyRes.data || []).length);
+          metricTotalTests.textContent = String(analyticsRes.data?.total || 0);
+          metricWinRate.textContent = `${Number(analyticsRes.data?.win_rate || 0).toFixed(2)}%`;
+          metricDuration.textContent = `TP ${durationRes.data?.tp_days_avg || 0}d / SL ${durationRes.data?.sl_days_avg || 0}d`;
+
+          analysisWinRate.textContent = `${Number(analyticsRes.data?.win_rate || 0).toFixed(2)}%`;
+          analysisAvgProfit.textContent = `${Number(analyticsRes.data?.win_rate || 0).toFixed(2)}%`;
+          analysisTpDays.textContent = `${durationRes.data?.tp_days_avg || 0} hari`;
+          analysisSlDays.textContent = `${durationRes.data?.sl_days_avg || 0} hari`;
+          renderDistribution(distributionRes.data || {});
+
+          if (authUser?.role === "admin") {
+            const [adminRes, adminMembershipRes] = await Promise.all([apiRequest("/admin/users"), apiRequest("/admin/memberships")]);
+            adminMembershipMap = new Map((adminMembershipRes.data || []).map((item) => [Number(item.user_id), item]));
+            renderAdminUsers(adminRes.data || []);
+          } else {
+            renderAdminUsers([]);
+          }
+        } catch (error) {
+          setAuthStatus(`Gagal load data API: ${error.message}`, "text-rose-600");
+        }
+      }
+
+      function debounce(fn, wait = 200) {
+        let timer = null;
+        return (...args) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => fn(...args), wait);
+        };
+      }
+
+      function setView(viewName) {
+        sections.forEach((section) => {
+          section.classList.toggle("hidden", section.dataset.view !== viewName);
+        });
+
+        navButtons.forEach((button) => {
+          const isActive = button.dataset.viewTarget === viewName;
+          button.classList.toggle("active-nav", isActive);
+          button.classList.toggle("text-slate-700", !isActive);
+        });
+
+        pageTitle.textContent = titleMap[viewName] || "Dashboard";
+      }
+
+      function renderFtTable(items) {
+        ftTableBody.innerHTML = "";
+
+        items.forEach((item) => {
+          const row = document.createElement("tr");
+          row.className = "border-b";
+          row.innerHTML = `
+            <td class="py-2 pr-4">${item.emiten}</td>
+            <td class="py-2 pr-4">${item.entry.toLocaleString("id-ID")}</td>
+            <td class="py-2 pr-4">${item.tp.toLocaleString("id-ID")} / ${item.sl.toLocaleString("id-ID")}</td>
+            <td class="py-2 pr-4">${item.status}</td>
+            <td class="py-2 pr-4">${item.strategy}</td>
+          `;
+          ftTableBody.appendChild(row);
+        });
+
+        if (!items.length) {
+          const emptyRow = document.createElement("tr");
+          emptyRow.innerHTML = '<td colspan="5" class="py-3 text-center text-slate-500">Data tidak ditemukan.</td>';
+          ftTableBody.appendChild(emptyRow);
+        }
+      }
+
+      function applyFtFilter() {
+        const keyword = ftSearchInput.value.trim().toLowerCase();
+        const status = ftFilterStatus.value;
+
+        const filtered = ftData.filter((row) => {
+          const keywordMatch = !keyword || row.emiten.toLowerCase().includes(keyword) || row.strategy.toLowerCase().includes(keyword);
+          const statusMatch = status === "all" || row.status === status;
+          return keywordMatch && statusMatch;
+        });
+
+        renderFtTable(filtered);
+        ftFilterFeedback.textContent = `${filtered.length} data tampil.`;
+      }
+
+      function setFieldError(inputEl, errorEl, message) {
+        errorEl.textContent = message;
+        const hasError = Boolean(message);
+        inputEl.classList.toggle("border-rose-400", hasError);
+        inputEl.classList.toggle("focus:ring-rose-200", hasError);
+        inputEl.setAttribute("aria-invalid", hasError ? "true" : "false");
+      }
+
+      function validateField(fieldName) {
+        if (fieldName === "emiten") {
+          const emiten = ftEmitenInput.value.trim().toUpperCase();
+          const message = emiten ? "" : "Emiten wajib diisi.";
+          setFieldError(ftEmitenInput, ftEmitenError, message);
+          return !message;
+        }
+
+        if (fieldName === "entry") {
+          const entry = Number(ftEntryInput.value);
+          let message = "";
+          if (!entry) {
+            message = "Entry wajib diisi.";
+          } else if (entry <= 0) {
+            message = "Entry harus lebih dari 0.";
+          }
+          setFieldError(ftEntryInput, ftEntryError, message);
+          return !message;
+        }
+
+        if (fieldName === "tp") {
+          const tp = Number(ftTpInput.value);
+          const entry = Number(ftEntryInput.value);
+          let message = "";
+          if (!tp) {
+            message = "TP wajib diisi.";
+          } else if (entry && tp <= entry) {
+            message = "TP harus lebih besar dari Entry.";
+          }
+          setFieldError(ftTpInput, ftTpError, message);
+          return !message;
+        }
+
+        if (fieldName === "sl") {
+          const sl = Number(ftSlInput.value);
+          const entry = Number(ftEntryInput.value);
+          let message = "";
+          if (!sl) {
+            message = "SL wajib diisi.";
+          } else if (entry && sl >= entry) {
+            message = "SL harus lebih kecil dari Entry.";
+          }
+          setFieldError(ftSlInput, ftSlError, message);
+          return !message;
+        }
+
+        if (fieldName === "strategy") {
+          const strategy = ftStrategyInput.value.trim();
+          const message = strategy ? "" : "Strategi wajib diisi.";
+          setFieldError(ftStrategyInput, ftStrategyError, message);
+          return !message;
+        }
+
+        if (fieldName === "date") {
+          const message = ftDateInput.value ? "" : "Tanggal entry wajib diisi.";
+          setFieldError(ftDateInput, ftDateError, message);
+          return !message;
+        }
+
+        return true;
+      }
+
+      function clearFieldErrors() {
+        setFieldError(ftEmitenInput, ftEmitenError, "");
+        setFieldError(ftEntryInput, ftEntryError, "");
+        setFieldError(ftTpInput, ftTpError, "");
+        setFieldError(ftSlInput, ftSlError, "");
+        setFieldError(ftStrategyInput, ftStrategyError, "");
+        setFieldError(ftDateInput, ftDateError, "");
+      }
+
+      function setSaveButtonLoading(isLoading) {
+        ftSaveBtn.disabled = isLoading;
+        ftSaveBtn.textContent = isLoading ? "Menyimpan..." : "Simpan Test";
+      }
+
+      function resetFtForm() {
+        ftForm.reset();
+        clearFieldErrors();
+        ftFeedback.textContent = "Form direset.";
+        ftFeedback.className = "md:col-span-2 xl:col-span-4 text-sm text-slate-500";
+      }
+
+      function validateFtForm() {
+        const fields = ["emiten", "entry", "tp", "sl", "strategy", "date"];
+        return fields.every((field) => validateField(field));
+      }
+
+      async function saveFtForm() {
+        const isValid = validateFtForm();
+        if (!isValid) {
+          ftFeedback.textContent = "Periksa kembali field yang masih error.";
+          ftFeedback.className = "md:col-span-2 xl:col-span-4 text-sm text-rose-600";
+          return;
+        }
+
+        if (!authToken) {
+          ftFeedback.textContent = "Silakan login dulu sebelum menyimpan forward test.";
+          ftFeedback.className = "md:col-span-2 xl:col-span-4 text-sm text-rose-600";
+          return;
+        }
+
+        try {
+          setSaveButtonLoading(true);
+
+          const limitCheck = await apiRequest("/membership/check-limit");
+          if (!limitCheck.unlimited && ftData.length >= Number(limitCheck.max_forward_tests || 0)) {
+            ftFeedback.textContent = "Limit forward test membership free sudah tercapai.";
+            ftFeedback.className = "md:col-span-2 xl:col-span-4 text-sm text-rose-600";
+            setSaveButtonLoading(false);
+            return;
+          }
+
+          await apiRequest("/forward-tests", {
+            method: "POST",
+            body: JSON.stringify({
+              emiten: ftEmitenInput.value.trim().toUpperCase(),
+              entry_price: Number(ftEntryInput.value),
+              take_profit: Number(ftTpInput.value),
+              stop_loss: Number(ftSlInput.value),
+              entry_date: ftDateInput.value,
+              status: ftStatusInput.value,
+              notes: ftNoteInput.value.trim(),
+            }),
+          });
+
+          await loadPrivateData();
+          ftFeedback.textContent = "Forward test berhasil disimpan ke backend API.";
+          ftFeedback.className = "md:col-span-2 xl:col-span-4 text-sm text-emerald-600";
+        } catch (error) {
+          ftFeedback.textContent = `Gagal simpan: ${error.message}`;
+          ftFeedback.className = "md:col-span-2 xl:col-span-4 text-sm text-rose-600";
+        } finally {
+          setSaveButtonLoading(false);
+        }
+      }
+
+      async function runOcrMock() {
+        if (!authToken) {
+          ocrFeedback.textContent = "Login dulu untuk menggunakan OCR parse API.";
+          return;
+        }
+
+        try {
+          const parsed = await apiRequest("/ocr/parse", {
+            method: "POST",
+            body: JSON.stringify({ text: "UNTR 24850 TP 26300 SL 24000" }),
+          });
+
+          ftEmitenInput.value = parsed.data.emiten || "UNTR";
+          ftEntryInput.value = String(parsed.data.entry_price || 24850);
+          ftTpInput.value = String(parsed.data.take_profit || 26300);
+          ftSlInput.value = String(parsed.data.stop_loss || 24000);
+          ftStrategyInput.value = "OCR Parsed Strategy";
+          ["emiten", "entry", "tp", "sl", "strategy"].forEach((field) => validateField(field));
+          ocrFeedback.textContent = "OCR parse API sukses, field otomatis terisi.";
+        } catch (error) {
+          ocrFeedback.textContent = `OCR gagal: ${error.message}`;
+        }
+      }
+
+      const debouncedApplyFtFilter = debounce(applyFtFilter, 180);
+
+      navButtons.forEach((button) => {
+        button.addEventListener("click", () => setView(button.dataset.viewTarget));
+      });
+
+      ftSaveBtn.addEventListener("click", saveFtForm);
+      ftResetBtn.addEventListener("click", resetFtForm);
+      ocrMockBtn.addEventListener("click", runOcrMock);
+      ftApplyFilterBtn.addEventListener("click", applyFtFilter);
+      ftSearchInput.addEventListener("input", debouncedApplyFtFilter);
+      ftFilterStatus.addEventListener("change", applyFtFilter);
+      ftEmitenInput.addEventListener("input", () => validateField("emiten"));
+      ftEntryInput.addEventListener("input", () => {
+        validateField("entry");
+        validateField("tp");
+        validateField("sl");
+      });
+      ftTpInput.addEventListener("input", () => validateField("tp"));
+      ftSlInput.addEventListener("input", () => validateField("sl"));
+      ftStrategyInput.addEventListener("input", () => validateField("strategy"));
+      ftDateInput.addEventListener("change", () => validateField("date"));
+      loginUserBtn.addEventListener("click", () => loginWithCredentials("user@example.com", "User123!"));
+      loginAdminBtn.addEventListener("click", () => loginWithCredentials("admin@example.com", "Admin123!"));
+      logoutBtn.addEventListener("click", async () => {
+        if (authToken) {
+          try {
+            await apiRequest("/auth/logout", { method: "POST" });
+          } catch (_error) {
+            // noop
+          }
+        }
+        clearSession();
+        renderStrategies([]);
+        renderAdminUsers([]);
+        ftData = [...defaultFtData];
+        renderDashboardLatestTests(ftData);
+        applyFtFilter();
+      });
+
+      renderFtTable(ftData);
+      renderDashboardLatestTests(ftData);
+      ftFilterFeedback.textContent = `${ftData.length} data tampil.`;
+      renderStrategies([]);
+      renderAdminUsers([]);
+      restoreSession();
+    </script>
+  </body>
+</html>

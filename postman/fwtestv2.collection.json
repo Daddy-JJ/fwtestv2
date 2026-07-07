@@ -1,0 +1,303 @@
+{
+  "info": {
+    "name": "FWTestV2 API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Draft collection for Phase 5 API verification"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.environment.set('token', json.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Membership",
+      "item": [
+        {
+          "name": "Current Membership",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/membership/current"
+          }
+        },
+        {
+          "name": "Check Limit",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/membership/check-limit"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Strategy",
+      "item": [
+        {
+          "name": "List Strategies",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/strategies"
+          }
+        },
+        {
+          "name": "Create Strategy",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/strategies",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Strategy QA\",\n  \"description\": \"From Postman collection\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.environment.set('strategy_id', json.data.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Forward Test",
+      "item": [
+        {
+          "name": "Create Forward Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/forward-tests",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emiten\": \"BBCA\",\n  \"entry_price\": 9200,\n  \"take_profit\": 9800,\n  \"stop_loss\": 8900,\n  \"entry_date\": \"2026-07-07\",\n  \"strategy_id\": {{strategy_id}}\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 201', function () { pm.response.to.have.status(201); });",
+                  "const json = pm.response.json();",
+                  "pm.environment.set('forward_test_id', json.data.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Forward Test",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/forward-tests/{{forward_test_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/analytics/stats"
+          }
+        },
+        {
+          "name": "Distribution",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/analytics/distribution"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stock Data",
+      "item": [
+        {
+          "name": "Search Stock",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/stocks/search?q=BB"
+          }
+        },
+        {
+          "name": "Stock Current",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/stocks/BBCA/current"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Upload OCR",
+      "item": [
+        {
+          "name": "Upload Screenshot",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/uploads/screenshot",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"file_url\": \"https://example.com/screenshot.png\"\n}"
+            }
+          }
+        },
+        {
+          "name": "OCR Parse",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/ocr/parse",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"BBCA 9200 TP 9800 SL 8900\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.environment.set('admin_token', json.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/admin/users"
+          }
+        },
+        {
+          "name": "List Memberships",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/admin/memberships"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000/api" },
+    { "key": "user_email", "value": "user@example.com" },
+    { "key": "user_password", "value": "User123!" },
+    { "key": "admin_email", "value": "admin@example.com" },
+    { "key": "admin_password", "value": "Admin123!" },
+    { "key": "token", "value": "" },
+    { "key": "admin_token", "value": "" },
+    { "key": "strategy_id", "value": "1" },
+    { "key": "forward_test_id", "value": "1" }
+  ]
+}
